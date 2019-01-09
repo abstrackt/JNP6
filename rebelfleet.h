@@ -1,33 +1,40 @@
-//
-// Created by Andrzej on 06.01.2019.
-//
-
 #ifndef JNP6_REBELFLEET_H
 #define JNP6_REBELFLEET_H
 
+#include "imperialfleet.h"
 #include "helper.h"
 
-class RebelStarship : public Starship {
+class RebelStarship : public SoloStarship {
 private:
     Speed speed;
-
 public:
-    Speed getSpeed() const;
+    RebelStarship(ShieldPoints shield, Speed speed) : SoloStarship(shield) {
+        this->speed = speed;
+    };
+
+    Speed getSpeed() const {
+        return this->speed;
+    };
+
+    virtual void engageTarget(ImperialStarship &s) {
+        this->takeDamage(s.getAttackPower());
+    };
 };
 
 class Explorer : public RebelStarship {
 public:
-    Explorer(ShieldPoints shield, Speed speed);
+    Explorer(ShieldPoints shield, Speed speed) : RebelStarship(shield, speed){};
 };
 
-class XWing : public RebelStarship, public CombatStarship {
+class XWing : public RebelCombatStarship {
 public:
-    XWing(ShieldPoints shield, Speed speed, AttackPower power);
+    XWing(ShieldPoints shield, Speed speed, AttackPower power) : RebelCombatStarship(shield, speed, power){};
 };
 
-class StarCruiser : public RebelStarship, public CombatStarship {
+class StarCruiser : public RebelCombatStarship {
 public:
-    StarCruiser(ShieldPoints shield, Speed speed, AttackPower power);
+    StarCruiser(ShieldPoints shield, Speed speed, AttackPower power) : RebelCombatStarship(shield, speed, power){};
 };
 
 #endif //JNP6_REBELFLEET_H
+
