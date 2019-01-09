@@ -33,7 +33,7 @@ int main() {
 
     battle.tick(4);
     assert(battle.countRebelFleet() == 0);
-    assert(battle.countImperialFleet() == 1);*/
+    assert(battle.countImperialFleet() == 1);
 
     battle.tick(1); // Wypisuje "IMPERIUM WON\n".
 }
