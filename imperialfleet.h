@@ -2,37 +2,53 @@
 #define JNP6_IMPERIALFLEET_H
 
 #include "helper.h"
+#include "parameters.h"
+#include <vector>
 
 //INTERFACE
-class ImperialStarship : public CombatStarship {
+class ImperialStarship : virtual public CombatStarship {
 
+};
+
+class SoloImperialStarship : public virtual SoloCombatStarship,
+                             public virtual ImperialStarship,
+                             public virtual SoloStarship {
+public:
+    SoloImperialStarship(ShieldPoints shield, AttackPower power) : SoloStarship(shield),
+                                                                   SoloCombatStarship(power) {}
 };
 
 class DeathStar : public SoloImperialStarship {
 public:
-    DeathStar(ShieldPoints shield, AttackPower power) : SoloImperialStarship(shield, power) {};
+    DeathStar(ShieldPoints shield, AttackPower power) : SoloImperialStarship(shield, power),
+                                                        SoloStarship(shield),
+                                                        SoloCombatStarship(power) {};
 };
 
 class TIEFighter : public SoloImperialStarship {
 public:
-    TIEFighter(ShieldPoints shield, AttackPower power) : SoloImperialStarship(shield, power) {};
+    TIEFighter(ShieldPoints shield, AttackPower power) : SoloImperialStarship(shield, power),
+                                                         SoloStarship(shield),
+                                                         SoloCombatStarship(power) {};
 };
 
 class ImperialDestroyer : public SoloImperialStarship {
 public:
-    ImperialDestroyer(ShieldPoints shield, AttackPower power) : SoloImperialStarship(shield, power) {};
+    ImperialDestroyer(ShieldPoints shield, AttackPower power) : SoloImperialStarship(shield, power),
+                                                                SoloStarship(shield),
+                                                                SoloCombatStarship(power) {};
 };
 
 class Squadron : public ImperialStarship {
 private:
-    vector<ImperialStarship &> members;
+    std::vector<ImperialStarship> members;
 public:
     //TODO
-    Squadron(ImperialShip &s...) {};
+    Squadron(ImperialStarship &s...) {};
 
     AttackPower getAttackPower() override {
         unsigned int combined_power = 0;
-        for(auto &ship : members) {
+        for (auto &ship : members) {
             combined_power += ship.getAttackPower().getValue();
         }
     };

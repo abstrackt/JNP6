@@ -41,17 +41,17 @@ private:
 public:
     size_t countImperialFleet() {
         return this->imperialCount;
-    };
+    }
 
     size_t countRebelFleet() {
         return this->rebelCount;
-    };
+    }
 
     void tick(Time timeStep) {
         unsigned int newTimeValue = (this->tcurr.getTime() + timeStep.getTime()) % this->t1.getTime();
         tcurr.setTime(newTimeValue);
         if (tcurr.isAttackTime()) conductAttack();
-    };
+    }
 };
 
 
