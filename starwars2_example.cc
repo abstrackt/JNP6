@@ -2,12 +2,16 @@
 #include "imperialfleet.h"
 #include "rebelfleet.h"
 #include "battle.h"
+#include <iostream>
 
 int main() {
     auto xwing = createXWing(100, 300000, 50);
     auto explorer = createExplorer(150, 400000);
     auto cruiser = createStarCruiser(1234, 100000, 11);
-    auto deathStar = createDeathStar(10000, 75);
+    std::cout << "Shield explorera to: " << explorer->getShield().points << std::endl;
+    std::cout << "Shield xwinga to: " << xwing->getShield().points << std::endl;
+    std::cout << "Shield cruisera to: " << cruiser->getShield().points << std::endl;
+    /*auto deathStar = createDeathStar(10000, 75);
     auto fighter = createTIEFighter(50, 9);
     auto destroyer = createImperialDestroyer(150, 20);
     auto squadron = createSquadron({deathStar, fighter});
@@ -35,5 +39,5 @@ int main() {
     assert(battle.countRebelFleet() == 0);
     assert(battle.countImperialFleet() == 1);
 
-    battle.tick(1); // Wypisuje "IMPERIUM WON\n".
+    battle.tick(1); // Wypisuje "IMPERIUM WON\n". */
 }

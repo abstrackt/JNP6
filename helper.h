@@ -8,25 +8,35 @@
 class AttackPower {
 public:
     unsigned int power;
+    AttackPower(unsigned int power);
 };
 
 class ShieldPoints {
-private:
-    unsigned int points;
 public:
+    unsigned int points;
+
+    ShieldPoints(unsigned int points);
+
     void decreaseShield(AttackPower value);
 };
 
 class Speed {
 public:
     unsigned int speed;
+
+    Speed(unsigned int speed);
 };
 
 class Starship {
 private:
     ShieldPoints shield;
 
+protected:
+    Starship(ShieldPoints shield);
+
 public:
+    virtual ~Starship() = default;
+
     ShieldPoints getShield();
     void takeDamage(AttackPower damage);
     virtual void attack(Starship &s);
@@ -35,6 +45,9 @@ public:
 class CombatStarship : public Starship {
 private:
     AttackPower power;
+
+protected:
+    CombatStarship(ShieldPoints shield, AttackPower power);
 
 public:
     AttackPower getAttackPower();
