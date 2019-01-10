@@ -3,94 +3,63 @@
 
 #include "helper.h"
 #include "parameters.h"
-
-#include <utility>
 #include <vector>
-#include <memory>
 
 //INTERFACE
-// todo: tu jest virtual public w innym miejscu odwrotnie
-class ImperialStarship : virtual public CombatStarship {};
+class ImperialStarship : virtual public CombatStarship {
 
-class SoloImperialStarship : public virtual SoloCombatStarship,
-    public virtual ImperialStarship,
-    public virtual SoloStarship {
+};
+
+class SoloImperialStarship : virtual public SoloCombatStarship,
+                             virtual public ImperialStarship,
+                             virtual public SoloStarship {
 public:
-    SoloImperialStarship(ShieldPoints shield, AttackPower power)
-        : SoloCombatStarship(power), SoloStarship(shield) {}
+    SoloImperialStarship(ShieldPoints shield, AttackPower power) : SoloStarship(shield),
+                                                                   SoloCombatStarship(power) {}
 };
 
 class DeathStar : public SoloImperialStarship {
 public:
-    DeathStar(ShieldPoints shield, AttackPower power)
-        : SoloCombatStarship(power), SoloStarship(shield), SoloImperialStarship(shield, power) {}
+    DeathStar(ShieldPoints shield, AttackPower power) : SoloImperialStarship(shield, power),
+                                                        SoloStarship(shield),
+                                                        SoloCombatStarship(power) {};
 };
 
 class TIEFighter : public SoloImperialStarship {
 public:
-    TIEFighter(ShieldPoints shield, AttackPower power)
-        : SoloCombatStarship(power), SoloStarship(shield), SoloImperialStarship(shield, power) {}
+    TIEFighter(ShieldPoints shield, AttackPower power) : SoloImperialStarship(shield, power),
+                                                         SoloStarship(shield),
+                                                         SoloCombatStarship(power) {};
 };
 
 class ImperialDestroyer : public SoloImperialStarship {
 public:
-    ImperialDestroyer(ShieldPoints shield, AttackPower power)
-        : SoloCombatStarship(power), SoloStarship(shield), SoloImperialStarship(shield, power) {}
+    ImperialDestroyer(ShieldPoints shield, AttackPower power) : SoloImperialStarship(shield, power),
+                                                                SoloStarship(shield),
+                                                                SoloCombatStarship(power) {};
 };
 
 class Squadron : public ImperialStarship {
 private:
-    // TODO: tutaj dobrze using??
-    std::vector<std::shared_ptr<ImperialStarship>> members;
+    std::vector<ImperialStarship> members;
 public:
     //TODO
-    Squadron(std::initializer_list<std::shared_ptr<ImperialStarship>> members)
-        : members(members) {};
-
-    Squadron(std::vector<std::shared_ptr<ImperialStarship>> members)
-        : members(std::move(members)) {};
+    Squadron(ImperialStarship &s...) {};
 
     AttackPower getAttackPower() override {
-        unsigned int combinedPower = 0;
-        for (auto &ship : this->members) {
-            combinedPower += ship->getAttackPower().getValue();
+        unsigned int combined_power = 0;
+        for (auto &ship : members) {
+            combined_power += ship.getAttackPower().getValue();
         }
-        return combinedPower;
-    }
+    };
 
     ShieldPoints getShield() override {
-        unsigned int combinedShield = 0;
-        for (auto &ship : this->members) {
-            combinedShield += ship->getShield().getValue();
-        }
-        return combinedShield;
-    }
+
+    };
 
     void takeDamage(AttackPower damage) override {
-        for (auto &ship : this->members) {
-            ship->takeDamage(damage);
-        }
-    }
+
+    };
 };
-
-std::shared_ptr<DeathStar> createDeathStar(ShieldPoints shield, AttackPower power) {
-    return std::make_shared<DeathStar>(shield, power);
-}
-
-std::shared_ptr<TIEFighter> createTIEFighter(ShieldPoints shield, AttackPower power) {
-    return std::make_shared<TIEFighter>(shield, power);
-}
-
-std::shared_ptr<ImperialDestroyer> createImperialDestroyer(ShieldPoints shield, AttackPower power) {
-    return std::make_shared<ImperialDestroyer>(shield, power);
-}
-
-std::shared_ptr<ImperialStarship> createSquadron(std::initializer_list<std::shared_ptr<ImperialStarship>> members) {
-    return std::make_shared<Squadron>(members);
-}
-
-std::shared_ptr<ImperialStarship> createSquadron(std::vector<std::shared_ptr<ImperialStarship>> members) {
-    return std::make_shared<Squadron>(members);
-}
 
 #endif //JNP6_IMPERIALFLEET_H
