@@ -2,8 +2,8 @@
 #define JNP6_REBELFLEET_H
 
 #include <memory>
-#include "imperialfleet.h"
 #include "helper.h"
+#include "imperialfleet.h"
 
 class RebelStarship : virtual public SoloStarship {
 private:
@@ -11,6 +11,9 @@ private:
 public:
     RebelStarship(ShieldPoints shield, Speed speed) : SoloStarship(shield), speed(speed) {}
 
+    // TODO niescislosc? getSpeed() jest z const a getShield() nie
+    // TODO i getSpeed() nie jest virtual a getShield() jest, czyli potencjalnie
+    // TODO zabraniamy pozniejsza modyfikacje tego
     Speed getSpeed() const {
         return this->speed;
     }
@@ -21,11 +24,10 @@ public:
 };
 
 class RebelCombatStarship : virtual public SoloCombatStarship,
-                            virtual public RebelStarship {
+    virtual public RebelStarship {
 public:
-    RebelCombatStarship(ShieldPoints shield, AttackPower power, Speed speed) : SoloStarship(shield),
-                                                                               RebelStarship(shield, speed),
-                                                                               SoloCombatStarship(power) {}
+    RebelCombatStarship(ShieldPoints shield, AttackPower power, Speed speed)
+        : SoloCombatStarship(power), SoloStarship(shield), RebelStarship(shield, speed) {}
 
     void engageTarget(SoloImperialStarship &s) override {
         this->takeDamage(s.getAttackPower());
@@ -35,41 +37,38 @@ public:
 
 class Explorer : public RebelStarship {
 public:
-    Explorer(ShieldPoints shield, Speed speed) : RebelStarship(shield, speed),
-                                                 SoloStarship(shield) {}
+    Explorer(ShieldPoints shield, Speed speed)
+        : SoloStarship(shield), RebelStarship(shield, speed) {}
 };
 
 class XWing : public RebelCombatStarship {
 public:
-    XWing(ShieldPoints shield, Speed speed, AttackPower power) : RebelCombatStarship(shield, power, speed),
-                                                                 SoloStarship(shield),
-                                                                 RebelStarship(shield, speed),
-                                                                 SoloCombatStarship(power) {}
+    XWing(ShieldPoints shield, Speed speed, AttackPower power)
+        : SoloCombatStarship(power),
+        SoloStarship(shield),
+        RebelStarship(shield, speed),
+        RebelCombatStarship(shield, power, speed) {}
 };
 
 class StarCruiser : public RebelCombatStarship {
 public:
-    StarCruiser(ShieldPoints shield, Speed speed, AttackPower power) : RebelCombatStarship(shield, power, speed),
-                                                                       SoloStarship(shield),
-                                                                       RebelStarship(shield, speed),
-                                                                       SoloCombatStarship(power) {}
+    StarCruiser(ShieldPoints shield, Speed speed, AttackPower power)
+        : SoloCombatStarship(power),
+        SoloStarship(shield),
+        RebelStarship(shield, speed),
+        RebelCombatStarship(shield, power, speed) {}
 };
 
-// czy shared_ptr<Starship> czy shared_ptr<Explorer> zwracac?
 std::shared_ptr<Starship> createExplorer(ShieldPoints shield, Speed speed) {
     return std::make_shared<Explorer>(shield, speed);
 }
 
 std::shared_ptr<Starship> createXWing(ShieldPoints shield, Speed speed, AttackPower power) {
-    // TODO to jest jakis bullshit chyba? ale nawet sie kompiluje, czyli
-    // TODO udowodnione matematycznie ze jest poprawne
-    return std::dynamic_pointer_cast<RebelStarship>(
-            std::make_shared<XWing>(shield, speed, power));
+    return std::make_shared<XWing>(shield, speed, power);
 }
 
 std::shared_ptr<Starship> createStarCruiser(ShieldPoints shield, Speed speed, AttackPower power) {
-    return std::dynamic_pointer_cast<RebelStarship>(
-            std::make_shared<StarCruiser>(shield, speed, power));
+    return std::make_shared<StarCruiser>(shield, speed, power);
 }
 
 #endif //JNP6_REBELFLEET_H

@@ -6,6 +6,7 @@
 //INTERFACE
 class Starship {
 public:
+    virtual ~Starship() = default;
 
     virtual ShieldPoints getShield() = 0;
 
