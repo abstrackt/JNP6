@@ -38,7 +38,9 @@ public:
 class Explorer : public RebelStarship {
 public:
     Explorer(ShieldPoints shield, Speed speed)
-        : SoloStarship(shield), RebelStarship(shield, speed) {}
+        : SoloStarship(shield), RebelStarship(shield, speed) {
+        assert(299796 <= speed.getValue() && speed.getValue() <= 2997960);
+    }
 };
 
 class XWing : public RebelCombatStarship {
@@ -47,7 +49,9 @@ public:
         : SoloCombatStarship(power),
         SoloStarship(shield),
         RebelStarship(shield, speed),
-        RebelCombatStarship(shield, power, speed) {}
+        RebelCombatStarship(shield, power, speed) {
+        assert(299796 <= speed.getValue() && speed.getValue() <= 2997960);
+    }
 };
 
 class StarCruiser : public RebelCombatStarship {
@@ -56,7 +60,9 @@ public:
         : SoloCombatStarship(power),
         SoloStarship(shield),
         RebelStarship(shield, speed),
-        RebelCombatStarship(shield, power, speed) {}
+        RebelCombatStarship(shield, power, speed) {
+        assert(99999 <= speed.getValue() && speed.getValue() <= 299795);
+    }
 };
 
 std::shared_ptr<Explorer> createExplorer(ShieldPoints shield, Speed speed) {

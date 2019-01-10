@@ -9,6 +9,7 @@
 #include <memory>
 
 //INTERFACE
+// todo: tu jest virtual public w innym miejscu odwrotnie
 class ImperialStarship : virtual public CombatStarship {};
 
 class SoloImperialStarship : public virtual SoloCombatStarship,
