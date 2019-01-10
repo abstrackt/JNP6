@@ -37,21 +37,22 @@ public:
         : SoloCombatStarship(power), SoloStarship(shield), SoloImperialStarship(shield, power) {}
 };
 
-/*class Squadron : public ImperialStarship {
+class Squadron : public ImperialStarship {
 private:
-    std::vector<ImperialStarship> members;
+    // TODO: tutaj dobrze using??
+    std::vector<std::shared_ptr<ImperialStarship>> members;
 public:
     //TODO
-    Squadron(std::initializer_list<ImperialStarship> members)
+    Squadron(std::initializer_list<std::shared_ptr<ImperialStarship>> members)
         : members(members) {};
 
-    Squadron(std::vector<ImperialStarship> members)
+    Squadron(std::vector<std::shared_ptr<ImperialStarship>> members)
         : members(std::move(members)) {};
 
     AttackPower getAttackPower() override {
         unsigned int combinedPower = 0;
         for (auto &ship : this->members) {
-            combinedPower += ship.getAttackPower().getValue();
+            combinedPower += ship->getAttackPower().getValue();
         }
         return combinedPower;
     }
@@ -59,39 +60,36 @@ public:
     ShieldPoints getShield() override {
         unsigned int combinedShield = 0;
         for (auto &ship : this->members) {
-            combinedShield += ship.getShield().getValue();
+            combinedShield += ship->getShield().getValue();
         }
         return combinedShield;
     }
 
     void takeDamage(AttackPower damage) override {
         for (auto &ship : this->members) {
-            ship.takeDamage(damage);
+            ship->takeDamage(damage);
         }
     }
-};*/
+};
 
-std::shared_ptr<Starship> createDeathStar(ShieldPoints shield, AttackPower power) {
+std::shared_ptr<ImperialStarship> createDeathStar(ShieldPoints shield, AttackPower power) {
     return std::make_shared<DeathStar>(shield, power);
 }
 
-std::shared_ptr<Starship> createTIEFighter(ShieldPoints shield, AttackPower power) {
+std::shared_ptr<ImperialStarship> createTIEFighter(ShieldPoints shield, AttackPower power) {
     return std::make_shared<TIEFighter>(shield, power);
 }
 
-std::shared_ptr<Starship> createImperialDestroyer(ShieldPoints shield, AttackPower power) {
+std::shared_ptr<ImperialStarship> createImperialDestroyer(ShieldPoints shield, AttackPower power) {
     return std::make_shared<ImperialDestroyer>(shield, power);
 }
 
-// TODO - zle: vector/lista bedzie shared_ptr (patrz example)
-// TODO i shared_ptr do Starship a nie ImperialStarship, czyli DOWNCAST ??? O NIE, TRAGEDIA
-// TODO czyli nasze metody fabrykujace createXWing itp musza zwracac std::shared_ptr<XWing> ?
-/*std::shared_ptr<Starship> createSquadron(std::initializer_list<ImperialStarship> members) {
+std::shared_ptr<ImperialStarship> createSquadron(std::initializer_list<std::shared_ptr<ImperialStarship>> members) {
     return std::make_shared<Squadron>(members);
 }
 
-std::shared_ptr<Starship> createSquadron(std::vector<ImperialStarship> members) {
+std::shared_ptr<ImperialStarship> createSquadron(std::vector<std::shared_ptr<ImperialStarship>> members) {
     return std::make_shared<Squadron>(members);
-}*/
+}
 
 #endif //JNP6_IMPERIALFLEET_H
