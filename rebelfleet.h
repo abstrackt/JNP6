@@ -59,15 +59,15 @@ public:
         RebelCombatStarship(shield, power, speed) {}
 };
 
-std::shared_ptr<RebelStarship> createExplorer(ShieldPoints shield, Speed speed) {
+std::shared_ptr<Explorer> createExplorer(ShieldPoints shield, Speed speed) {
     return std::make_shared<Explorer>(shield, speed);
 }
 
-std::shared_ptr<RebelStarship> createXWing(ShieldPoints shield, Speed speed, AttackPower power) {
+std::shared_ptr<XWing> createXWing(ShieldPoints shield, Speed speed, AttackPower power) {
     return std::make_shared<XWing>(shield, speed, power);
 }
 
-std::shared_ptr<RebelStarship> createStarCruiser(ShieldPoints shield, Speed speed, AttackPower power) {
+std::shared_ptr<StarCruiser> createStarCruiser(ShieldPoints shield, Speed speed, AttackPower power) {
     return std::make_shared<StarCruiser>(shield, speed, power);
 }
 

@@ -72,15 +72,15 @@ public:
     }
 };
 
-std::shared_ptr<ImperialStarship> createDeathStar(ShieldPoints shield, AttackPower power) {
+std::shared_ptr<DeathStar> createDeathStar(ShieldPoints shield, AttackPower power) {
     return std::make_shared<DeathStar>(shield, power);
 }
 
-std::shared_ptr<ImperialStarship> createTIEFighter(ShieldPoints shield, AttackPower power) {
+std::shared_ptr<TIEFighter> createTIEFighter(ShieldPoints shield, AttackPower power) {
     return std::make_shared<TIEFighter>(shield, power);
 }
 
-std::shared_ptr<ImperialStarship> createImperialDestroyer(ShieldPoints shield, AttackPower power) {
+std::shared_ptr<ImperialDestroyer> createImperialDestroyer(ShieldPoints shield, AttackPower power) {
     return std::make_shared<ImperialDestroyer>(shield, power);
 }
 
