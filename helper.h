@@ -3,20 +3,18 @@
 
 #include "parameters.h"
 
-//INTERFACE
 class Starship {
 public:
     virtual ~Starship() = default;
 
-    virtual ShieldPoints getShield() = 0;
+    virtual ShieldPoints getShield() const = 0;
 
     virtual void takeDamage(AttackPower damage) = 0;
 };
 
-//INTERFACE
 class CombatStarship : virtual public Starship {
 public:
-    virtual AttackPower getAttackPower() = 0;
+    virtual AttackPower getAttackPower() const = 0;
 };
 
 class SoloStarship : virtual public Starship {
@@ -25,7 +23,7 @@ private:
 public:
     SoloStarship(ShieldPoints shield) : shield(shield) {}
 
-    ShieldPoints getShield() override {
+    ShieldPoints getShield() const override {
         return this->shield;
     }
 
@@ -40,7 +38,7 @@ private:
 public:
     SoloCombatStarship(AttackPower power) : power(power) {};
 
-    AttackPower getAttackPower() override {
+    AttackPower getAttackPower() const override {
         return this->power;
     }
 };

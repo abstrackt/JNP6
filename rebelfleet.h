@@ -1,9 +1,11 @@
 #ifndef JNP6_REBELFLEET_H
 #define JNP6_REBELFLEET_H
 
-#include <memory>
 #include "helper.h"
 #include "imperialfleet.h"
+
+#include <cassert>
+#include <memory>
 
 class RebelStarship : virtual public SoloStarship {
 private:
@@ -11,14 +13,11 @@ private:
 public:
     RebelStarship(ShieldPoints shield, Speed speed) : SoloStarship(shield), speed(speed) {}
 
-    // TODO niescislosc? getSpeed() jest z const a getShield() nie
-    // TODO i getSpeed() nie jest virtual a getShield() jest, czyli potencjalnie
-    // TODO zabraniamy pozniejsza modyfikacje tego
-    Speed getSpeed() const {
+    virtual Speed getSpeed() const {
         return this->speed;
     }
 
-    virtual void engageTarget(SoloImperialStarship &s) {
+    virtual void engageTarget(ImperialStarship &s) {
         this->takeDamage(s.getAttackPower());
     }
 };
@@ -27,9 +26,11 @@ class RebelCombatStarship : virtual public SoloCombatStarship,
     virtual public RebelStarship {
 public:
     RebelCombatStarship(ShieldPoints shield, AttackPower power, Speed speed)
-        : SoloCombatStarship(power), SoloStarship(shield), RebelStarship(shield, speed) {}
+        : SoloCombatStarship(power),
+          SoloStarship(shield),
+          RebelStarship(shield, speed) {}
 
-    void engageTarget(SoloImperialStarship &s) override {
+    void engageTarget(ImperialStarship &s) override {
         this->takeDamage(s.getAttackPower());
         s.takeDamage(this->getAttackPower());
     }
@@ -38,7 +39,8 @@ public:
 class Explorer : public RebelStarship {
 public:
     Explorer(ShieldPoints shield, Speed speed)
-        : SoloStarship(shield), RebelStarship(shield, speed) {
+        : SoloStarship(shield),
+          RebelStarship(shield, speed) {
         assert(299796 <= speed.getValue() && speed.getValue() <= 2997960);
     }
 };
@@ -47,9 +49,9 @@ class XWing : public RebelCombatStarship {
 public:
     XWing(ShieldPoints shield, Speed speed, AttackPower power)
         : SoloCombatStarship(power),
-        SoloStarship(shield),
-        RebelStarship(shield, speed),
-        RebelCombatStarship(shield, power, speed) {
+          SoloStarship(shield),
+          RebelStarship(shield, speed),
+          RebelCombatStarship(shield, power, speed) {
         assert(299796 <= speed.getValue() && speed.getValue() <= 2997960);
     }
 };
@@ -58,9 +60,9 @@ class StarCruiser : public RebelCombatStarship {
 public:
     StarCruiser(ShieldPoints shield, Speed speed, AttackPower power)
         : SoloCombatStarship(power),
-        SoloStarship(shield),
-        RebelStarship(shield, speed),
-        RebelCombatStarship(shield, power, speed) {
+          SoloStarship(shield),
+          RebelStarship(shield, speed),
+          RebelCombatStarship(shield, power, speed) {
         assert(99999 <= speed.getValue() && speed.getValue() <= 299795);
     }
 };
