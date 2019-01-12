@@ -25,8 +25,8 @@ public:
     };
 
     virtual bool isAttackTime() {
-        return this->value % 2 == 0 &&
-               this->value % 3 == 0 &&
+        return (this->value % 2 == 0 ||
+               this->value % 3 == 0) &&
                this->value % 5 != 0;
     };
 };
@@ -36,15 +36,11 @@ class SpaceBattle {
 private:
     std::vector<std::shared_ptr<ImperialStarship>> imperialForce;
     std::vector<std::shared_ptr<RebelStarship>> rebelForce;
-    size_t imperialCount, rebelCount;
     Time t0, t1, tcurr;
 
-    SpaceBattle(size_t ic, size_t rc, Time t0, Time t1,
-                std::vector<std::shared_ptr<ImperialStarship>> iForce,
+    SpaceBattle(Time t0, Time t1, std::vector<std::shared_ptr<ImperialStarship>> iForce,
                 std::vector<std::shared_ptr<RebelStarship>> rForce)
-                    : imperialCount(ic),
-                      rebelCount(rc), t0(t0),
-                      t1(t1), tcurr(t0), rebelForce(rForce),
+                    : t0(t0), t1(t1), tcurr(t0), rebelForce(rForce),
                       imperialForce(iForce) {};
 
     void conductAttack() {
@@ -52,8 +48,6 @@ private:
             for (auto &rShip : rebelForce) {
                 if (rShip->getShield().getValue() != 0 && iShip->getShield().getValue() != 0) {
                     rShip->engageTarget(*iShip);
-                    if (rShip->getShield().getValue() == 0) rebelCount--;
-                    if (iShip->getShield().getValue() == 0) imperialCount--;
                 }
             }
         }
@@ -64,34 +58,26 @@ public:
     private:
         std::vector<std::shared_ptr<ImperialStarship>> imperialForce;
         std::vector<std::shared_ptr<RebelStarship>> rebelForce;
-        size_t imperialCount, rebelCount;
         Time t0, t1;
 
     public:
-        Builder() : imperialCount(0), rebelCount(0),
-                    t0(Time(0)), t1(Time(0)) {}
+        Builder() : t0(Time(0)), t1(Time(0)) {}
 
         Builder &ship(std::shared_ptr<RebelStarship> starship) {
             std::shared_ptr<RebelStarship> moved = std::move(starship);
             rebelForce.push_back(moved);
-            rebelCount++;
             return *this;
         }
 
         Builder &ship(std::shared_ptr<ImperialStarship> starship) {
             std::shared_ptr<ImperialStarship> moved = std::move(starship);
             imperialForce.push_back(moved);
-            imperialCount++;
             return *this;
         }
 
         Builder &ship(std::shared_ptr<Squadron> starship) {
             std::shared_ptr<Squadron> moved = std::move(starship);
             imperialForce.push_back(moved);
-            //TODO jak dostać się do liczebności squadronu bez publicznych zmiennych?
-            //TODO czy jeżeli do bitwy dodany zostaje squadron to możemy założyć że nie zostaną
-            //oddzielnie dodane do niej statki należące do squadronu?
-            imperialCount++;
             return *this;
         }
 
@@ -106,27 +92,42 @@ public:
         }
 
         SpaceBattle &build() {
-            SpaceBattle *s = new SpaceBattle(imperialCount, rebelCount,
-                                             t0, t1, imperialForce, rebelForce);
+            SpaceBattle *s = new SpaceBattle(t0, t1, imperialForce, rebelForce);
             return *s;
         }
     };
 
     size_t countImperialFleet() {
-        return this->imperialCount;
+        size_t count = 0;
+        for (auto &ship : imperialForce) {
+            count+=ship->getCount();
+        }
+        return count;
     }
 
     size_t countRebelFleet() {
-        return this->rebelCount;
+        size_t count = 0;
+        for (auto &ship : rebelForce) {
+            count+=ship->getCount();
+        }
+        return count;
     }
 
     void tick(Time timeStep) {
+        size_t imperialCount = countImperialFleet();
+        size_t rebelCount = countRebelFleet();
         if(imperialCount == 0 && rebelCount == 0) std::cout << "DRAW\n";
         if(imperialCount == 0 && rebelCount != 0) std::cout << "REBELLION WON\n";
         if(imperialCount != 0 && rebelCount == 0) std::cout << "IMPERIUM WON\n";
+        if (tcurr.isAttackTime()) {
+            std::cout << "fighting now\n";
+            conductAttack();
+        }
         unsigned int newTimeValue = (this->tcurr.getTime() + timeStep.getTime()) % this->t1.getTime();
         tcurr.setTime(newTimeValue);
-        if (tcurr.isAttackTime()) conductAttack();
+        std::cout << "at time " << tcurr.getTime() <<
+                     " rebels: " << countRebelFleet() <<
+                     " imperials: " << countImperialFleet() << "\n";
     }
 };
 

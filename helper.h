@@ -9,6 +9,8 @@ public:
 
     virtual ShieldPoints getShield() const = 0;
 
+    virtual size_t getCount() const = 0;
+
     virtual void takeDamage(AttackPower damage) = 0;
 };
 
@@ -22,6 +24,11 @@ private:
     ShieldPoints shield;
 public:
     SoloStarship(ShieldPoints shield) : shield(shield) {}
+
+    size_t getCount() const override {
+        if(this->getShield().getValue() > 0) return 1;
+        else return 0;
+    }
 
     ShieldPoints getShield() const override {
         return this->shield;

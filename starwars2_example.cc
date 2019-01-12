@@ -25,8 +25,8 @@ int main() {
         .ship(explorer)
         .build();
 
-    std::cout << "rebels: " << battle.countRebelFleet() << "\n";
-    std::cout << "imperials: " << battle.countImperialFleet() << "\n";
+    std::cout << "initial rebels: " << battle.countRebelFleet() << "\n";
+    std::cout << "initial imperials: " << battle.countImperialFleet() << "\n";
 
     assert(battle.countRebelFleet() == 2);
     assert(battle.countImperialFleet() == 2);

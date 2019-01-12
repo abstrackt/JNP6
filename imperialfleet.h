@@ -11,8 +11,8 @@
 class ImperialStarship : virtual public CombatStarship {};
 
 class SoloImperialStarship : virtual public SoloCombatStarship,
-    public virtual ImperialStarship,
-    public virtual SoloStarship {
+                             public virtual ImperialStarship,
+                             public virtual SoloStarship {
 public:
     SoloImperialStarship(ShieldPoints shield, AttackPower power)
         : SoloCombatStarship(power),
@@ -48,6 +48,14 @@ private:
     std::vector<std::shared_ptr<ImperialStarship>> members;
 public:
     //TODO
+    size_t getCount() const override {
+        size_t strength = 0;
+        for(auto &m : members) {
+            if(m->getShield().getValue() > 0) strength++;
+        }
+        return strength;
+    }
+
     Squadron(std::initializer_list<std::shared_ptr<ImperialStarship>> members)
         : members(members) {};
 
