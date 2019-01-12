@@ -47,7 +47,6 @@ class Squadron : public ImperialStarship {
 private:
     std::vector<std::shared_ptr<ImperialStarship>> members;
 public:
-    //TODO
     size_t getCount() const override {
         size_t strength = 0;
         for(auto &m : members) {
@@ -56,6 +55,7 @@ public:
         return strength;
     }
 
+    //TODO
     Squadron(std::initializer_list<std::shared_ptr<ImperialStarship>> members)
         : members(members) {};
 
@@ -78,8 +78,6 @@ public:
         return combinedShield;
     }
 
-    //TODO jak bez tworzenia publicznych atrybutów / metod sprawdzić
-    //czy któryś ze statków został zniszczony i odpowiednio zmniejszać liczbę statków?
     void takeDamage(AttackPower damage) override {
         for (auto &ship : this->members) {
             ship->takeDamage(damage);
