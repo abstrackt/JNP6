@@ -22,6 +22,8 @@ public:
     }
 };
 
+using RebelStarship_ptr = std::shared_ptr<RebelStarship>;
+
 class RebelCombatStarship : virtual public SoloCombatStarship,
     virtual public RebelStarship {
 public:

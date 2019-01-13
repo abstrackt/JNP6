@@ -2,13 +2,14 @@
 #define JNP6_IMPERIALFLEET_H
 
 #include "helper.h"
-#include "parameters.h"
 
 #include <utility>
 #include <vector>
 #include <memory>
 
 class ImperialStarship : virtual public CombatStarship {};
+
+using ImperialStarship_ptr = std::shared_ptr<ImperialStarship>;
 
 class SoloImperialStarship : virtual public SoloCombatStarship,
                              public virtual ImperialStarship,
@@ -45,7 +46,7 @@ public:
 
 class Squadron : public ImperialStarship {
 private:
-    std::vector<std::shared_ptr<ImperialStarship>> members;
+    std::vector<ImperialStarship_ptr> members;
 public:
     size_t getCount() const override {
         size_t strength = 0;
@@ -56,24 +57,25 @@ public:
     }
 
     //TODO
-    Squadron(std::initializer_list<std::shared_ptr<ImperialStarship>> members)
+    Squadron(std::initializer_list<ImperialStarship_ptr> members)
         : members(members) {};
 
-    Squadron(std::vector<std::shared_ptr<ImperialStarship>> members)
+    Squadron(std::vector<ImperialStarship_ptr> members)
         : members(std::move(members)) {};
 
     AttackPower getAttackPower() const override {
-        unsigned int combinedPower = 0;
+        AttackPower combinedPower = 0;
         for (auto &ship : this->members) {
-            combinedPower += ship->getAttackPower().getValue();
+            // TODO tylko zyjace
+            combinedPower += ship->getAttackPower();
         }
         return combinedPower;
     }
 
     ShieldPoints getShield() const override {
-        unsigned int combinedShield = 0;
+        ShieldPoints combinedShield = 0;
         for (auto &ship : this->members) {
-            combinedShield += ship->getShield().getValue();
+            combinedShield += ship->getShield();
         }
         return combinedShield;
     }
@@ -97,11 +99,11 @@ std::shared_ptr<ImperialDestroyer> createImperialDestroyer(ShieldPoints shield, 
     return std::make_shared<ImperialDestroyer>(shield, power);
 }
 
-std::shared_ptr<ImperialStarship> createSquadron(std::initializer_list<std::shared_ptr<ImperialStarship>> members) {
+std::shared_ptr<Squadron> createSquadron(std::initializer_list<ImperialStarship_ptr> members) {
     return std::make_shared<Squadron>(members);
 }
 
-std::shared_ptr<ImperialStarship> createSquadron(std::vector<std::shared_ptr<ImperialStarship>> members) {
+std::shared_ptr<Squadron> createSquadron(std::vector<ImperialStarship_ptr> members) {
     return std::make_shared<Squadron>(members);
 }
 
