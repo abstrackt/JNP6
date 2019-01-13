@@ -72,10 +72,7 @@ public:
         Time t0, t1;
 
     public:
-        Builder() {
-            this->t0 = 0;
-            this->t1 = 0;
-        }
+        Builder() : t0(0), t1(0) {}
 
         Builder &ship(RebelStarship_ptr starship) {
             RebelStarship_ptr moved = std::move(starship);
