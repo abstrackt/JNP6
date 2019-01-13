@@ -50,16 +50,19 @@ private:
     std::vector<RebelStarship_ptr> rebelForce;
     Clock clock;
 
-    SpaceBattle(Time t0, Time t1, std::vector<ImperialStarship_ptr> iForce,
-                std::vector<RebelStarship_ptr> rForce)
-        : rebelForce(rForce), imperialForce(iForce), clock(t0, t1) {}
+    SpaceBattle(const Time &t0, const Time &t1,
+                std::vector<ImperialStarship_ptr> imperialForce,
+                std::vector<RebelStarship_ptr> rebelForce)
+        : imperialForce(std::move(imperialForce)), rebelForce(std::move(rebelForce)),
+        clock(t0, t1) {}
 
     void conductAttack() {
         for (auto &iShip : imperialForce) {
             for (auto &rShip : rebelForce) {
-                if (rShip->getShield().getValue() != 0 && iShip->getShield().getValue() != 0) {
-                    rShip->engageTarget(*iShip);
-                }
+                auto shouldAttack = rShip->getShield().getValue() != 0
+                    && iShip->getShield().getValue() != 0;
+
+                if (shouldAttack) rShip->engageTarget(*iShip);
             }
         }
     };
@@ -74,31 +77,23 @@ public:
     public:
         Builder() : t0(0), t1(0) {}
 
-        Builder &ship(RebelStarship_ptr starship) {
-            RebelStarship_ptr moved = std::move(starship);
-            rebelForce.push_back(moved);
+        Builder &ship(const RebelStarship_ptr &starship) {
+            this->rebelForce.push_back(starship);
             return *this;
         }
 
-        Builder &ship(ImperialStarship_ptr starship) {
-            ImperialStarship_ptr moved = std::move(starship);
-            imperialForce.push_back(moved);
+        Builder &ship(const ImperialStarship_ptr &starship) {
+            this->imperialForce.push_back(starship);
             return *this;
         }
 
-        Builder &ship(std::shared_ptr<Squadron> starship) {
-            std::shared_ptr<Squadron> moved = std::move(starship);
-            imperialForce.push_back(moved);
+        Builder &startTime(const Time &t0) {
+            this->t0 = t0;
             return *this;
         }
 
-        Builder &startTime(unsigned int x) {
-            t0 = x;
-            return *this;
-        }
-
-        Builder &maxTime(unsigned int x) {
-            t1 = x;
+        Builder &maxTime(const Time &t1) {
+            this->t1 = t1;
             return *this;
         }
 
