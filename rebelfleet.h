@@ -9,7 +9,7 @@
 
 class RebelStarship : virtual public SoloStarship {
 private:
-    Speed speed;
+    const Speed speed;
 public:
     RebelStarship(ShieldPoints shield, Speed speed) : SoloStarship(shield), speed(speed) {}
 
@@ -21,6 +21,8 @@ public:
         this->takeDamage(s.getAttackPower());
     }
 };
+
+using RebelStarship_ptr = std::shared_ptr<RebelStarship>;
 
 class RebelCombatStarship : virtual public SoloCombatStarship,
     virtual public RebelStarship {
@@ -41,7 +43,7 @@ public:
     Explorer(ShieldPoints shield, Speed speed)
         : SoloStarship(shield),
           RebelStarship(shield, speed) {
-        assert(299796 <= speed.getValue() && speed.getValue() <= 2997960);
+        assert(299796 <= speed && speed <= 2997960);
     }
 };
 
@@ -52,7 +54,7 @@ public:
           SoloStarship(shield),
           RebelStarship(shield, speed),
           RebelCombatStarship(shield, power, speed) {
-        assert(299796 <= speed.getValue() && speed.getValue() <= 2997960);
+        assert(299796 <= speed && speed <= 2997960);
     }
 };
 
@@ -63,7 +65,7 @@ public:
           SoloStarship(shield),
           RebelStarship(shield, speed),
           RebelCombatStarship(shield, power, speed) {
-        assert(99999 <= speed.getValue() && speed.getValue() <= 299795);
+        assert(99999 <= speed && speed <= 299795);
     }
 };
 

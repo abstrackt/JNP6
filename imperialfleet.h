@@ -9,69 +9,73 @@
 
 class ImperialStarship : virtual public CombatStarship {};
 
+using ImperialStarship_ptr = std::shared_ptr<ImperialStarship>;
+
 class SoloImperialStarship : virtual public SoloCombatStarship,
                              virtual public ImperialStarship,
                              virtual public SoloStarship {
 public:
     SoloImperialStarship(ShieldPoints shield, AttackPower power)
         : SoloCombatStarship(power),
-          SoloStarship(shield) {}
+        SoloStarship(shield) {}
 };
 
 class DeathStar : public SoloImperialStarship {
 public:
     DeathStar(ShieldPoints shield, AttackPower power)
         : SoloCombatStarship(power),
-          SoloStarship(shield),
-          SoloImperialStarship(shield, power) {}
+        SoloStarship(shield),
+        SoloImperialStarship(shield, power) {}
 };
 
 class TIEFighter : public SoloImperialStarship {
 public:
     TIEFighter(ShieldPoints shield, AttackPower power)
         : SoloCombatStarship(power),
-          SoloStarship(shield),
-          SoloImperialStarship(shield, power) {}
+        SoloStarship(shield),
+        SoloImperialStarship(shield, power) {}
 };
 
 class ImperialDestroyer : public SoloImperialStarship {
 public:
     ImperialDestroyer(ShieldPoints shield, AttackPower power)
         : SoloCombatStarship(power),
-          SoloStarship(shield),
-          SoloImperialStarship(shield, power) {}
+        SoloStarship(shield),
+        SoloImperialStarship(shield, power) {}
 };
 
 class Squadron : public ImperialStarship {
 private:
-    std::vector<std::shared_ptr<ImperialStarship>> members;
+    std::vector<ImperialStarship_ptr> members;
 public:
     size_t getCount() const override {
         size_t strength = 0;
-        for(auto &m : members) {
-            if(m->getShield().getValue() > 0) strength++;
+        for (auto &m : members) {
+            if (m->getShield() > 0) strength += m->getCount();
         }
         return strength;
     }
 
-    Squadron(std::initializer_list<std::shared_ptr<ImperialStarship>> members)
-        : members(members) {};
+    Squadron(std::initializer_list<ImperialStarship_ptr> members)
+        : members(members) {}
 
-    Squadron(std::vector<std::shared_ptr<ImperialStarship>> members)
-        : members(std::move(members)) {};
+    Squadron(std::vector<ImperialStarship_ptr> members)
+        : members(std::move(members)) {}
 
     AttackPower getAttackPower() const override {
-        unsigned int combinedPower = 0;
+        AttackPower combinedPower = 0;
         for (auto &ship : this->members) {
-            if(ship->getShield().getValue() > 0) combinedPower += ship->getAttackPower().getValue();
+            if (ship->getShield() > 0) {
+                combinedPower += ship->getAttackPower();
+            }
         }
         return combinedPower;
     }
 
     ShieldPoints getShield() const override {
-        unsigned int combinedShield = 0;
+        ShieldPoints combinedShield = 0;
         for (auto &ship : this->members) {
-            combinedShield += ship->getShield().getValue();
+            combinedShield += ship->getShield();
         }
         return combinedShield;
     }
@@ -95,11 +99,11 @@ std::shared_ptr<ImperialDestroyer> createImperialDestroyer(ShieldPoints shield, 
     return std::make_shared<ImperialDestroyer>(shield, power);
 }
 
-std::shared_ptr<ImperialStarship> createSquadron(std::initializer_list<std::shared_ptr<ImperialStarship>> members) {
+std::shared_ptr<Squadron> createSquadron(std::initializer_list<ImperialStarship_ptr> members) {
     return std::make_shared<Squadron>(members);
 }
 
-std::shared_ptr<ImperialStarship> createSquadron(std::vector<std::shared_ptr<ImperialStarship>> members) {
+std::shared_ptr<Squadron> createSquadron(std::vector<ImperialStarship_ptr> members) {
     return std::make_shared<Squadron>(members);
 }
 

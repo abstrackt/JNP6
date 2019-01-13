@@ -7,50 +7,59 @@
 #include <vector>
 #include <iostream>
 
-class Clock {
+class Time {
 private:
-    unsigned int tcurr;
-    unsigned int t1;
+    unsigned int value;
 
 public:
-    Clock(unsigned int t0, unsigned int t1) {
-        this->tcurr = t0;
-        this->t1 = t1;
+    Time(unsigned int start) {
+        this->value = start;
     }
 
-    virtual unsigned int getTime() {
-        return this->tcurr;
-    };
-
-    virtual void tickTime(unsigned int timeStep) {
-        unsigned int newTimeValue = (this->tcurr + timeStep) % this->t1;
-        this->tcurr = newTimeValue;
+    virtual unsigned int getTime() const {
+        return this->value;
     };
 
     virtual bool isAttackTime() {
-        return (this->tcurr % 2 == 0 ||
-               this->tcurr % 3 == 0) &&
-               this->tcurr % 5 != 0;
+        return (this->value % 2 == 0 ||
+                this->value % 3 == 0) &&
+                this->value % 5 != 0;
     };
 };
 
-class SpaceBattle {
-
+class Clock {
 private:
-    std::vector<std::shared_ptr<ImperialStarship>> imperialForce;
-    std::vector<std::shared_ptr<RebelStarship>> rebelForce;
-    Clock c;
+    Time t0, t1, currentTime;
 
-    SpaceBattle(unsigned int t0, unsigned int t1, std::vector<std::shared_ptr<ImperialStarship>> const &iForce,
-                std::vector<std::shared_ptr<RebelStarship>> const &rForce) : c(t0, t1) {
+public:
+    Clock(const Time &t0, const Time &t1) : t0(t0), t1(t1), currentTime(t0) {}
+
+    virtual void stepTime(const Time &timeStep) {
+        auto newTimeValue = (this->currentTime.getTime() + timeStep.getTime()) % (this->t1.getTime() + 1);
+        this->currentTime = newTimeValue;
+    }
+
+    virtual Time getCurrentTime() const {
+        return this->currentTime;
+    }
+};
+
+class SpaceBattle {
+private:
+    std::vector<ImperialStarship_ptr> imperialForce;
+    std::vector<RebelStarship_ptr> rebelForce;
+    Clock clock;
+
+    SpaceBattle(Time t0, Time t1, std::vector<ImperialStarship_ptr> const &iForce,
+                std::vector<RebelStarship_ptr> const &rForce) : clock(t0, t1) {
         this->imperialForce = iForce;
         this->rebelForce = rForce;
-    };
+    }
 
     void conductAttack() {
         for (auto &iShip : imperialForce) {
             for (auto &rShip : rebelForce) {
-                if (rShip->getShield().getValue() != 0 && iShip->getShield().getValue() != 0) {
+                if (rShip->getShield() != 0 && iShip->getShield() != 0) {
                     rShip->engageTarget(*iShip);
                 }
             }
@@ -60,31 +69,21 @@ private:
 public:
     class Builder {
     private:
-        std::vector<std::shared_ptr<ImperialStarship>> imperialForce;
-        std::vector<std::shared_ptr<RebelStarship>> rebelForce;
-        unsigned int t0;
-        unsigned int t1;
+        std::vector<ImperialStarship_ptr> imperialForce;
+        std::vector<RebelStarship_ptr> rebelForce;
+        Time t0, t1;
 
     public:
-        Builder() {
-            this->t0 = 0;
-            this->t1 = 0;
-        }
+        Builder() : t0(0), t1(0) {}
 
-        Builder &ship(std::shared_ptr<RebelStarship> starship) {
-            std::shared_ptr<RebelStarship> moved = std::move(starship);
+        Builder &ship(RebelStarship_ptr starship) {
+            RebelStarship_ptr moved = std::move(starship);
             rebelForce.push_back(moved);
             return *this;
         }
 
-        Builder &ship(std::shared_ptr<ImperialStarship> starship) {
-            std::shared_ptr<ImperialStarship> moved = std::move(starship);
-            imperialForce.push_back(moved);
-            return *this;
-        }
-
-        Builder &ship(std::shared_ptr<Squadron> starship) {
-            std::shared_ptr<Squadron> moved = std::move(starship);
+        Builder &ship(ImperialStarship_ptr starship) {
+            ImperialStarship_ptr moved = std::move(starship);
             imperialForce.push_back(moved);
             return *this;
         }
@@ -107,7 +106,7 @@ public:
     size_t countImperialFleet() {
         size_t count = 0;
         for (auto &ship : imperialForce) {
-            count+=ship->getCount();
+            count += ship->getCount();
         }
         return count;
     }
@@ -115,21 +114,25 @@ public:
     size_t countRebelFleet() {
         size_t count = 0;
         for (auto &ship : rebelForce) {
-            count+=ship->getCount();
+            count += ship->getCount();
         }
         return count;
     }
 
-    void tick(unsigned int timeStep) {
-        size_t imperialCount = countImperialFleet();
-        size_t rebelCount = countRebelFleet();
-        if(imperialCount == 0 && rebelCount == 0) std::cout << "DRAW\n";
-        if(imperialCount == 0 && rebelCount != 0) std::cout << "REBELLION WON\n";
-        if(imperialCount != 0 && rebelCount == 0) std::cout << "IMPERIUM WON\n";
-        if (c.isAttackTime()) {
+    void tick(const Time &timeStep) {
+        auto imperialCount = this->countImperialFleet();
+        auto rebelCount = this->countRebelFleet();
+
+        if (imperialCount == 0 && rebelCount == 0) std::cout << "DRAW\n";
+        if (imperialCount == 0 && rebelCount != 0) std::cout << "REBELLION WON\n";
+        if (imperialCount != 0 && rebelCount == 0) std::cout << "IMPERIUM WON\n";
+
+        auto currentTime = clock.getCurrentTime();
+
+        if (currentTime.isAttackTime()) {
             conductAttack();
         }
-        c.tickTime(timeStep);
+        this->clock.stepTime(timeStep);
     }
 };
 
