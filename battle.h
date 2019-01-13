@@ -7,25 +7,7 @@
 #include <vector>
 #include <iostream>
 
-class Time {
-private:
-    unsigned int value;
-
-public:
-    Time(unsigned int start) {
-        this->value = start;
-    }
-
-    virtual unsigned int getTime() const {
-        return this->value;
-    };
-
-    virtual bool isAttackTime() {
-        return (this->value % 2 == 0 ||
-                this->value % 3 == 0) &&
-            this->value % 5 != 0;
-    };
-};
+using Time = unsigned long long;
 
 class Clock {
 private:
@@ -34,13 +16,20 @@ private:
 public:
     Clock(const Time &t0, const Time &t1) : t0(t0), t1(t1), currentTime(t0) {}
 
+    virtual ~Clock() = default;
+
     virtual void stepTime(const Time &timeStep) {
-        auto newTimeValue = (this->currentTime.getTime() + timeStep.getTime()) % (this->t1.getTime() + 1);
+        auto newTimeValue = (this->currentTime + timeStep) % (this->t1 + 1);
         this->currentTime = newTimeValue;
     }
 
     virtual Time getCurrentTime() const {
         return this->currentTime;
+    }
+
+    virtual bool isAttackTime() const {
+        return (this->currentTime % 2 == 0 ||
+                this->currentTime % 3 == 0) && this->currentTime % 5 != 0;
     }
 };
 
@@ -126,9 +115,7 @@ public:
         if (imperialCount == 0 && rebelCount != 0) std::cout << "REBELLION WON\n";
         if (imperialCount != 0 && rebelCount == 0) std::cout << "IMPERIUM WON\n";
 
-        auto currentTime = clock.getCurrentTime();
-
-        if (currentTime.isAttackTime()) {
+        if (this->clock.isAttackTime()) {
             conductAttack();
         }
         this->clock.stepTime(timeStep);

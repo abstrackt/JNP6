@@ -17,8 +17,8 @@ public:
         return this->speed;
     }
 
-    virtual void engageTarget(ImperialStarship &s) {
-        this->takeDamage(s.getAttackPower());
+    virtual void engageTarget(ImperialStarship &ship) {
+        this->takeDamage(ship.getAttackPower());
     }
 };
 
@@ -28,21 +28,19 @@ class RebelCombatStarship : virtual public SoloCombatStarship,
     virtual public RebelStarship {
 public:
     RebelCombatStarship(ShieldPoints shield, AttackPower power, Speed speed)
-        : SoloCombatStarship(power),
-        SoloStarship(shield),
+        : SoloCombatStarship(power), SoloStarship(shield),
         RebelStarship(shield, speed) {}
 
-    void engageTarget(ImperialStarship &s) override {
-        this->takeDamage(s.getAttackPower());
-        s.takeDamage(this->getAttackPower());
+    void engageTarget(ImperialStarship &ship) override {
+        this->takeDamage(ship.getAttackPower());
+        ship.takeDamage(this->getAttackPower());
     }
 };
 
 class Explorer : public RebelStarship {
 public:
     Explorer(ShieldPoints shield, Speed speed)
-        : SoloStarship(shield),
-        RebelStarship(shield, speed) {
+        : SoloStarship(shield), RebelStarship(shield, speed) {
         assert(299796 <= speed && speed <= 2997960);
     }
 };
@@ -50,8 +48,7 @@ public:
 class XWing : public RebelCombatStarship {
 public:
     XWing(ShieldPoints shield, Speed speed, AttackPower power)
-        : SoloCombatStarship(power),
-        SoloStarship(shield),
+        : SoloCombatStarship(power), SoloStarship(shield),
         RebelStarship(shield, speed),
         RebelCombatStarship(shield, power, speed) {
         assert(299796 <= speed && speed <= 2997960);
@@ -61,8 +58,7 @@ public:
 class StarCruiser : public RebelCombatStarship {
 public:
     StarCruiser(ShieldPoints shield, Speed speed, AttackPower power)
-        : SoloCombatStarship(power),
-        SoloStarship(shield),
+        : SoloCombatStarship(power), SoloStarship(shield),
         RebelStarship(shield, speed),
         RebelCombatStarship(shield, power, speed) {
         assert(99999 <= speed && speed <= 299795);

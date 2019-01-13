@@ -3,9 +3,9 @@
 
 #include <algorithm>
 
-typedef unsigned long AttackPower;
-typedef unsigned long ShieldPoints;
-typedef unsigned long Speed;
+using AttackPower = unsigned long long;
+using ShieldPoints = unsigned long long;
+using Speed = unsigned long long;
 
 class Starship {
 public:
@@ -30,8 +30,7 @@ public:
     SoloStarship(ShieldPoints shield) : shield(shield) {}
 
     size_t getCount() const override {
-        if (this->getShield() > 0) return 1;
-        else return 0;
+        return this->getShield() > 0 ? 1 : 0;
     }
 
     ShieldPoints getShield() const override {
@@ -39,7 +38,8 @@ public:
     }
 
     void takeDamage(AttackPower damage) override {
-        this->shield -= std::min(this->shield, damage);
+        auto damageTaken = std::min(this->shield, damage);
+        this->shield -= damageTaken;
     }
 };
 
@@ -47,7 +47,7 @@ class SoloCombatStarship : virtual public CombatStarship {
 private:
     const AttackPower power;
 public:
-    SoloCombatStarship(AttackPower power) : power(power) {};
+    SoloCombatStarship(AttackPower power) : power(power) {}
 
     AttackPower getAttackPower() const override {
         return this->power;

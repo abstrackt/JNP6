@@ -16,31 +16,27 @@ class SoloImperialStarship : virtual public SoloCombatStarship,
     virtual public SoloStarship {
 public:
     SoloImperialStarship(ShieldPoints shield, AttackPower power)
-        : SoloCombatStarship(power),
-        SoloStarship(shield) {}
+        : SoloCombatStarship(power), SoloStarship(shield) {}
 };
 
 class DeathStar : public SoloImperialStarship {
 public:
     DeathStar(ShieldPoints shield, AttackPower power)
-        : SoloCombatStarship(power),
-        SoloStarship(shield),
+        : SoloCombatStarship(power), SoloStarship(shield),
         SoloImperialStarship(shield, power) {}
 };
 
 class TIEFighter : public SoloImperialStarship {
 public:
     TIEFighter(ShieldPoints shield, AttackPower power)
-        : SoloCombatStarship(power),
-        SoloStarship(shield),
+        : SoloCombatStarship(power), SoloStarship(shield),
         SoloImperialStarship(shield, power) {}
 };
 
 class ImperialDestroyer : public SoloImperialStarship {
 public:
     ImperialDestroyer(ShieldPoints shield, AttackPower power)
-        : SoloCombatStarship(power),
-        SoloStarship(shield),
+        : SoloCombatStarship(power), SoloStarship(shield),
         SoloImperialStarship(shield, power) {}
 };
 
@@ -48,19 +44,21 @@ class Squadron : public ImperialStarship {
 private:
     std::vector<ImperialStarship_ptr> members;
 public:
-    size_t getCount() const override {
-        size_t strength = 0;
-        for (auto &m : members) {
-            if (m->getShield() > 0) strength += m->getCount();
-        }
-        return strength;
-    }
-
     Squadron(std::initializer_list<ImperialStarship_ptr> members)
         : members(members) {}
 
     Squadron(std::vector<ImperialStarship_ptr> members)
         : members(std::move(members)) {}
+
+    size_t getCount() const override {
+        size_t combinedCount = 0;
+        for (auto &ship : this->members) {
+            if (ship->getShield() > 0) {
+                combinedCount += ship->getCount();
+            }
+        }
+        return combinedCount;
+    }
 
     AttackPower getAttackPower() const override {
         AttackPower combinedPower = 0;
