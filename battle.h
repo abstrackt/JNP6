@@ -35,7 +35,7 @@ public:
     Clock(const Time &t0, const Time &t1) : t0(t0), t1(t1), currentTime(t0) {}
 
     void stepTime(const Time &timeStep) {
-        auto newTimeValue = (this->currentTime.getTime() + timeStep.getTime()) % this->t1.getTime();
+        auto newTimeValue = (this->currentTime.getTime() + timeStep.getTime()) % (this->t1.getTime() + 1);
         this->currentTime = newTimeValue;
     }
 
@@ -125,8 +125,9 @@ public:
     }
 
     void tick(const Time &timeStep) {
-        auto imperialCount = countImperialFleet();
-        auto rebelCount = countRebelFleet();
+        auto imperialCount = this->countImperialFleet();
+        auto rebelCount = this->countRebelFleet();
+
         if (imperialCount == 0 && rebelCount == 0) std::cout << "DRAW\n";
         if (imperialCount == 0 && rebelCount != 0) std::cout << "REBELLION WON\n";
         if (imperialCount != 0 && rebelCount == 0) std::cout << "IMPERIUM WON\n";
@@ -134,13 +135,9 @@ public:
         auto currentTime = clock.getCurrentTime();
 
         if (currentTime.isAttackTime()) {
-            std::cout << "fighting now\n";
             conductAttack();
         }
         this->clock.stepTime(timeStep);
-        std::cout << "at time " << currentTime.getTime() <<
-            " rebels: " << countRebelFleet() <<
-            " imperials: " << countImperialFleet() << "\n";
     }
 };
 
