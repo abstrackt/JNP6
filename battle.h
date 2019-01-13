@@ -72,7 +72,10 @@ public:
         Time t0, t1;
 
     public:
-        Builder() : t0(Time(0)), t1(Time(0)) {}
+        Builder() {
+            this->t0 = 0;
+            this->t1 = 0;
+        }
 
         Builder &ship(RebelStarship_ptr starship) {
             RebelStarship_ptr moved = std::move(starship);
@@ -93,18 +96,17 @@ public:
         }
 
         Builder &startTime(unsigned int x) {
-            t0 = Time(x);
+            t0 = x;
             return *this;
         }
 
         Builder &maxTime(unsigned int x) {
-            t1 = Time(x);
+            t1 = x;
             return *this;
         }
 
-        SpaceBattle &build() {
-            SpaceBattle *s = new SpaceBattle(t0, t1, imperialForce, rebelForce);
-            return *s;
+        SpaceBattle build() const {
+            return SpaceBattle(t0, t1, imperialForce, rebelForce);
         }
     };
 

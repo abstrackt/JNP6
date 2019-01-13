@@ -12,8 +12,8 @@ class ImperialStarship : virtual public CombatStarship {};
 using ImperialStarship_ptr = std::shared_ptr<ImperialStarship>;
 
 class SoloImperialStarship : virtual public SoloCombatStarship,
-    public virtual ImperialStarship,
-    public virtual SoloStarship {
+                             virtual public ImperialStarship,
+                             virtual public SoloStarship {
 public:
     SoloImperialStarship(ShieldPoints shield, AttackPower power)
         : SoloCombatStarship(power),
