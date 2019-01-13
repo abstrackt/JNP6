@@ -13,7 +13,7 @@ private:
 public:
     RebelStarship(ShieldPoints shield, Speed speed) : SoloStarship(shield), speed(speed) {}
 
-    virtual Speed getSpeed() const {
+    Speed getSpeed() const {
         return this->speed;
     }
 

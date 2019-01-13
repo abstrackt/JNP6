@@ -1,7 +1,50 @@
 #ifndef JNP6_HELPER_H
 #define JNP6_HELPER_H
 
-#include "parameters.h"
+#include <algorithm>
+
+class AttackPower {
+private:
+    unsigned int power;
+public:
+    AttackPower(unsigned int power) {
+        this->power = power;
+    }
+
+    unsigned int getValue() const {
+        return power;
+    }
+};
+
+class ShieldPoints {
+private:
+    unsigned int points;
+public:
+    ShieldPoints(unsigned int points) {
+        this->points = points;
+    }
+
+    void decreaseShield(AttackPower value) {
+        this->points -= std::min(value.getValue(), this->points);
+    }
+
+    unsigned int getValue() const {
+        return points;
+    }
+};
+
+class Speed {
+private:
+    unsigned int speed;
+public:
+    Speed(unsigned int speed) {
+        this->speed = speed;
+    }
+
+    unsigned int getValue() const {
+        return speed;
+    }
+};
 
 class Starship {
 public:

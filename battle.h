@@ -7,27 +7,30 @@
 #include <vector>
 #include <iostream>
 
-class Time {
+class Clock {
 private:
-    unsigned int value;
+    unsigned int tcurr;
+    unsigned int t1;
 
 public:
-    Time(unsigned int start) {
-        this->value = start;
+    Clock(unsigned int t0, unsigned int t1) {
+        this->tcurr = t0;
+        this->t1 = t1;
     }
 
     virtual unsigned int getTime() {
-        return this->value;
+        return this->tcurr;
     };
 
-    virtual void setTime(unsigned int newTime) {
-        this->value = newTime;
+    virtual void tickTime(unsigned int timeStep) {
+        unsigned int newTimeValue = (this->tcurr + timeStep) % this->t1;
+        this->tcurr = newTimeValue;
     };
 
     virtual bool isAttackTime() {
-        return (this->value % 2 == 0 ||
-               this->value % 3 == 0) &&
-               this->value % 5 != 0;
+        return (this->tcurr % 2 == 0 ||
+               this->tcurr % 3 == 0) &&
+               this->tcurr % 5 != 0;
     };
 };
 
@@ -36,12 +39,13 @@ class SpaceBattle {
 private:
     std::vector<std::shared_ptr<ImperialStarship>> imperialForce;
     std::vector<std::shared_ptr<RebelStarship>> rebelForce;
-    Time t0, t1, tcurr;
+    Clock c;
 
-    SpaceBattle(Time t0, Time t1, std::vector<std::shared_ptr<ImperialStarship>> iForce,
-                std::vector<std::shared_ptr<RebelStarship>> rForce)
-                    : t0(t0), t1(t1), tcurr(t0), rebelForce(rForce),
-                      imperialForce(iForce) {};
+    SpaceBattle(unsigned int t0, unsigned int t1, std::vector<std::shared_ptr<ImperialStarship>> const &iForce,
+                std::vector<std::shared_ptr<RebelStarship>> const &rForce) : c(t0, t1) {
+        this->imperialForce = iForce;
+        this->rebelForce = rForce;
+    };
 
     void conductAttack() {
         for (auto &iShip : imperialForce) {
@@ -58,10 +62,14 @@ public:
     private:
         std::vector<std::shared_ptr<ImperialStarship>> imperialForce;
         std::vector<std::shared_ptr<RebelStarship>> rebelForce;
-        Time t0, t1;
+        unsigned int t0;
+        unsigned int t1;
 
     public:
-        Builder() : t0(Time(0)), t1(Time(0)) {}
+        Builder() {
+            this->t0 = 0;
+            this->t1 = 0;
+        }
 
         Builder &ship(std::shared_ptr<RebelStarship> starship) {
             std::shared_ptr<RebelStarship> moved = std::move(starship);
@@ -82,18 +90,17 @@ public:
         }
 
         Builder &startTime(unsigned int x) {
-            t0 = Time(x);
+            t0 = x;
             return *this;
         }
 
         Builder &maxTime(unsigned int x) {
-            t1 = Time(x);
+            t1 = x;
             return *this;
         }
 
-        SpaceBattle &build() {
-            SpaceBattle *s = new SpaceBattle(t0, t1, imperialForce, rebelForce);
-            return *s;
+        SpaceBattle build() const {
+            return SpaceBattle(t0, t1, imperialForce, rebelForce);
         }
     };
 
@@ -113,21 +120,16 @@ public:
         return count;
     }
 
-    void tick(Time timeStep) {
+    void tick(unsigned int timeStep) {
         size_t imperialCount = countImperialFleet();
         size_t rebelCount = countRebelFleet();
         if(imperialCount == 0 && rebelCount == 0) std::cout << "DRAW\n";
         if(imperialCount == 0 && rebelCount != 0) std::cout << "REBELLION WON\n";
         if(imperialCount != 0 && rebelCount == 0) std::cout << "IMPERIUM WON\n";
-        if (tcurr.isAttackTime()) {
-            std::cout << "fighting now\n";
+        if (c.isAttackTime()) {
             conductAttack();
         }
-        unsigned int newTimeValue = (this->tcurr.getTime() + timeStep.getTime()) % this->t1.getTime();
-        tcurr.setTime(newTimeValue);
-        std::cout << "at time " << tcurr.getTime() <<
-                     " rebels: " << countRebelFleet() <<
-                     " imperials: " << countImperialFleet() << "\n";
+        c.tickTime(timeStep);
     }
 };
 

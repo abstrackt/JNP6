@@ -2,7 +2,6 @@
 #define JNP6_IMPERIALFLEET_H
 
 #include "helper.h"
-#include "parameters.h"
 
 #include <utility>
 #include <vector>
@@ -11,8 +10,8 @@
 class ImperialStarship : virtual public CombatStarship {};
 
 class SoloImperialStarship : virtual public SoloCombatStarship,
-                             public virtual ImperialStarship,
-                             public virtual SoloStarship {
+                             virtual public ImperialStarship,
+                             virtual public SoloStarship {
 public:
     SoloImperialStarship(ShieldPoints shield, AttackPower power)
         : SoloCombatStarship(power),
@@ -55,7 +54,6 @@ public:
         return strength;
     }
 
-    //TODO
     Squadron(std::initializer_list<std::shared_ptr<ImperialStarship>> members)
         : members(members) {};
 
@@ -65,7 +63,7 @@ public:
     AttackPower getAttackPower() const override {
         unsigned int combinedPower = 0;
         for (auto &ship : this->members) {
-            combinedPower += ship->getAttackPower().getValue();
+            if(ship->getShield().getValue() > 0) combinedPower += ship->getAttackPower().getValue();
         }
         return combinedPower;
     }
