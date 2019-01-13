@@ -3,66 +3,9 @@
 
 #include <algorithm>
 
-class AttackPower {
-private:
-    unsigned int power;
-public:
-    AttackPower(unsigned int power) {
-        this->power = power;
-    }
-
-    unsigned int getValue() {
-        return power;
-    }
-
-    AttackPower operator+(const AttackPower& other) const {
-        return AttackPower(this->power + other.power);
-    }
-
-    AttackPower &operator+=(const AttackPower& other) {
-        this->power += other.power;
-        return *this;
-    }
-};
-
-class ShieldPoints {
-private:
-    unsigned int points;
-public:
-    ShieldPoints(unsigned int points) {
-        this->points = points;
-    }
-
-    void decreaseShield(AttackPower value) {
-        this->points -= std::min(value.getValue(), this->points);
-    }
-
-    unsigned int getValue() {
-        return points;
-    }
-
-    ShieldPoints operator+(const ShieldPoints& other) const {
-        return ShieldPoints(this->points + other.points);
-    }
-
-    ShieldPoints &operator+=(const ShieldPoints& other) {
-        this->points += other.points;
-        return *this;
-    }
-};
-
-class Speed {
-private:
-    unsigned int speed;
-public:
-    Speed(unsigned int speed) {
-        this->speed = speed;
-    }
-
-    unsigned int getValue() {
-        return speed;
-    }
-};
+typedef unsigned long AttackPower;
+typedef unsigned long ShieldPoints;
+typedef unsigned long Speed;
 
 class Starship {
 public:
@@ -87,7 +30,7 @@ public:
     SoloStarship(ShieldPoints shield) : shield(shield) {}
 
     size_t getCount() const override {
-        if(this->getShield().getValue() > 0) return 1;
+        if (this->getShield() > 0) return 1;
         else return 0;
     }
 
@@ -96,13 +39,13 @@ public:
     }
 
     void takeDamage(AttackPower damage) override {
-        this->shield.decreaseShield(damage);
+        this->shield -= std::min(this->shield, damage);
     }
 };
 
 class SoloCombatStarship : virtual public CombatStarship {
 private:
-    AttackPower power;
+    const AttackPower power;
 public:
     SoloCombatStarship(AttackPower power) : power(power) {};
 

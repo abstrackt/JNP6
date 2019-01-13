@@ -12,8 +12,8 @@ class ImperialStarship : virtual public CombatStarship {};
 using ImperialStarship_ptr = std::shared_ptr<ImperialStarship>;
 
 class SoloImperialStarship : virtual public SoloCombatStarship,
-                             virtual public ImperialStarship,
-                             virtual public SoloStarship {
+    virtual public ImperialStarship,
+    virtual public SoloStarship {
 public:
     SoloImperialStarship(ShieldPoints shield, AttackPower power)
         : SoloCombatStarship(power),
@@ -51,7 +51,7 @@ public:
     size_t getCount() const override {
         size_t strength = 0;
         for (auto &m : members) {
-            if (m->getShield().getValue() > 0) strength++;
+            if (m->getShield() > 0) strength += m->getCount();
         }
         return strength;
     }
@@ -65,7 +65,7 @@ public:
     AttackPower getAttackPower() const override {
         AttackPower combinedPower = 0;
         for (auto &ship : this->members) {
-            if (ship->getShield().getValue() > 0) {
+            if (ship->getShield() > 0) {
                 combinedPower += ship->getAttackPower();
             }
         }

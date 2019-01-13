@@ -34,12 +34,12 @@ private:
 public:
     Clock(const Time &t0, const Time &t1) : t0(t0), t1(t1), currentTime(t0) {}
 
-    void stepTime(const Time &timeStep) {
+    virtual void stepTime(const Time &timeStep) {
         auto newTimeValue = (this->currentTime.getTime() + timeStep.getTime()) % (this->t1.getTime() + 1);
         this->currentTime = newTimeValue;
     }
 
-    Time getCurrentTime() const {
+    virtual Time getCurrentTime() const {
         return this->currentTime;
     }
 };
@@ -59,8 +59,8 @@ private:
     void conductAttack() {
         for (auto &iShip : imperialForce) {
             for (auto &rShip : rebelForce) {
-                auto shouldAttack = rShip->getShield().getValue() != 0
-                    && iShip->getShield().getValue() != 0;
+                auto shouldAttack = rShip->getShield() != 0
+                    && iShip->getShield() != 0;
 
                 if (shouldAttack) rShip->engageTarget(*iShip);
             }
@@ -78,12 +78,12 @@ public:
         Builder() : t0(0), t1(0) {}
 
         Builder &ship(const RebelStarship_ptr &starship) {
-            this->rebelForce.push_back(starship);
+            rebelForce.push_back(starship);
             return *this;
         }
 
         Builder &ship(const ImperialStarship_ptr &starship) {
-            this->imperialForce.push_back(starship);
+            imperialForce.push_back(starship);
             return *this;
         }
 

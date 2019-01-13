@@ -29,8 +29,8 @@ class RebelCombatStarship : virtual public SoloCombatStarship,
 public:
     RebelCombatStarship(ShieldPoints shield, AttackPower power, Speed speed)
         : SoloCombatStarship(power),
-          SoloStarship(shield),
-          RebelStarship(shield, speed) {}
+        SoloStarship(shield),
+        RebelStarship(shield, speed) {}
 
     void engageTarget(ImperialStarship &s) override {
         this->takeDamage(s.getAttackPower());
@@ -42,8 +42,8 @@ class Explorer : public RebelStarship {
 public:
     Explorer(ShieldPoints shield, Speed speed)
         : SoloStarship(shield),
-          RebelStarship(shield, speed) {
-        assert(299796 <= speed.getValue() && speed.getValue() <= 2997960);
+        RebelStarship(shield, speed) {
+        assert(299796 <= speed && speed <= 2997960);
     }
 };
 
@@ -51,10 +51,10 @@ class XWing : public RebelCombatStarship {
 public:
     XWing(ShieldPoints shield, Speed speed, AttackPower power)
         : SoloCombatStarship(power),
-          SoloStarship(shield),
-          RebelStarship(shield, speed),
-          RebelCombatStarship(shield, power, speed) {
-        assert(299796 <= speed.getValue() && speed.getValue() <= 2997960);
+        SoloStarship(shield),
+        RebelStarship(shield, speed),
+        RebelCombatStarship(shield, power, speed) {
+        assert(299796 <= speed && speed <= 2997960);
     }
 };
 
@@ -62,10 +62,10 @@ class StarCruiser : public RebelCombatStarship {
 public:
     StarCruiser(ShieldPoints shield, Speed speed, AttackPower power)
         : SoloCombatStarship(power),
-          SoloStarship(shield),
-          RebelStarship(shield, speed),
-          RebelCombatStarship(shield, power, speed) {
-        assert(99999 <= speed.getValue() && speed.getValue() <= 299795);
+        SoloStarship(shield),
+        RebelStarship(shield, speed),
+        RebelCombatStarship(shield, power, speed) {
+        assert(99999 <= speed && speed <= 299795);
     }
 };
 
@@ -82,4 +82,3 @@ std::shared_ptr<StarCruiser> createStarCruiser(ShieldPoints shield, Speed speed,
 }
 
 #endif //JNP6_REBELFLEET_H
-
